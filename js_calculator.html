@@ -1,0 +1,141 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <title>JS Calculator</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../css/calculator.css">
+  </head>
+  <body>
+
+    <header>
+      <h1 align="center">Calculator</h1>
+      <!-- <a title="Back To Projects" href="file:///D:/academics/mission make it happen/my_website/html/projects.html">Back</a> -->
+    </header>
+
+    <main>
+      <div style="padding-top:10px;"></div>
+      <div id="cal_layout">
+        <div><button class="reset" value="reset">C</button><button class="result"></button></div>
+        <div style="padding-top:7px;">
+          <div><button class="num" value="7">7</button><button class="num" value="8">8</button><button class="num" value="9">9</button><button class="ops" value="+">+</button></div>
+          <div><button class="num" value="4">4</button><button class="num" value="5">5</button><button class="num" value="6">6</button><button class="ops" value="-">-</button></div>
+          <div><button class="num" value="1">1</button><button class="num" value="2">2</button><button class="num" value="3">3</button><button class="ops" value="*">*</button></div>
+          <div><button class="num" value="0">0</button><button class="point" value=".">.</button><button class="equals" value="=">=</button><button class="ops" value="/">/</button></div>
+        </div>
+      </div>
+    </main>
+    <footer>
+    </footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+    // window.onload = function(){
+    //   document.getElementById("loading").style.display = "none";
+    // }
+      //initialzing the variables
+      var result = '';//result variable
+      var inputs_tocal = [];//array of input characters which includes operands and operators successively
+      inputs_tocal[0] = '';//starting the fresh array
+      var j = 0;//index of the arrray inputs_tocal;
+      var previous_classname = 'num';//variable to keep track of previous pressed button
+      var buttons = document.getElementsByTagName('button');
+      document.querySelector('.result').innerHTML='0';//assigning 0 to cal when page is loaded
+
+      for (var i = 0; i < buttons.length; i += 1) {//loop for the inputs_tocal arrray
+        buttons[i].addEventListener('click', (event) => {//click event for buttons
+          if(event.target.className == 'ops'){//if operators are presssed
+            if(previous_classname == 'ops'){//if operators are pressed previously, it just updates the operator or else it accepts
+              inputs_tocal[j-1] = event.target.value;
+              document.querySelector('.result').innerHTML=inputs_tocal[j-1];
+            }else{
+              j++;
+              inputs_tocal[j] = event.target.value;
+              document.querySelector('.result').innerHTML=inputs_tocal[j];
+              j++;
+            }
+            // console.log(inputs_tocal);
+            previous_classname = 'ops';
+          }else if(event.target.className == 'point'){
+            if(previous_classname == 'equals'){//checks if the previous utton pressed id equals or not, if yes  it erases from the memory
+              inputs_tocal = [];
+              inputs_tocal[0] = '';
+            }
+            if(inputs_tocal[j] == undefined || inputs_tocal[j] == '' || inputs_tocal[j] == null){//if point is the first button pressed before any of the numbers it writes point(.) to the array
+              inputs_tocal[j] = '.';
+            }
+            else if(inputs_tocal[j].includes(".")){//if the current variable already includes point(.)
+            }else{
+              inputs_tocal[j] += '.';//if the current variable doesnt include point(.), include it
+            }
+            // console.log(inputs_tocal);
+            document.querySelector('.result').innerHTML=inputs_tocal[j];
+            previous_classname = 'point';
+          }else if(event.target.className == 'num'){//if numberes are typed
+            if(previous_classname == 'equals'){//checks if the previous utton pressed id equals or not, if yes  it erases from the memory
+              inputs_tocal = [];
+              inputs_tocal[0] = '';
+            }
+            if(previous_classname =='ops'){//previous button presesed is operators, create new variable in an array and insert the value or else update it
+              inputs_tocal[j] = event.target.value;
+              // inputs_tocal[j] = parseFloat(inputs_tocal[j]);
+            }else{
+              inputs_tocal[j] += event.target.value;
+              // inputs_tocal[j] = parseFloat(inputs_tocal[j]);
+            }
+            inputs_tocal[j] = inputs_tocal[j].replace(undefined, '');//replace undefined with blank space
+            // console.log(inputs_tocal);
+            previous_classname = 'num';
+            document.querySelector('.result').innerHTML=inputs_tocal[j];
+          }else if(event.target.className == 'equals'){//if equals is pressed
+            for(var k = 0; k<inputs_tocal.length; k++){//loop the array elements and evaluate it accordingly
+              if(inputs_tocal[k] == '' || inputs_tocal[k] == undefined || inputs_tocal[k] == null){//strip down the redundant variables in the array by just passing through
+                continue;
+              }else{
+                if(isNaN(inputs_tocal[k])){
+                  result += inputs_tocal[k];
+                }else{
+                  result += parseFloat(inputs_tocal[k]);//strip down the redundant zeroes
+                }
+
+              }
+            }
+
+            try {//error throw block
+                eval(result);
+            } catch (e) {
+                if (e instanceof SyntaxError) {
+                  var messages = "You broke it!";
+                    alert(messages);
+                    inputs_tocal = [];
+                    inputs_tocal[0] = '';
+                    result = '';
+                    document.querySelector('.result').innerHTML='0';
+                }
+            }
+            // console.log(result);
+            result = eval(result);
+            if(result == undefined){//return zero if it is an error or else print the result to the result variable
+              result = '';
+              document.querySelector('.result').innerHTML='0';
+            }else{
+              // console.log(inputs_tocal);
+              previous_classname = 'num';
+              document.querySelector('.result').innerHTML=result;
+              inputs_tocal = [];
+              inputs_tocal[0] = result;//keep the current rsult for further calculation
+              result = '';
+              previous_classname = 'equals';
+            }
+          }else if(event.target.className == 'reset'){//if reset button is pressed empty all the values and resstart
+            previous_classname = 'num';
+            inputs_tocal = [];
+            inputs_tocal[0] = '';
+            result = '';
+            document.querySelector('.result').innerHTML='0';
+          }
+        });
+      }
+
+    </script>
+    <!--<script src="file:///D:/academics/mission make it happen/my_website/js/projects.js"> </script>-->
+  </body>
+</html>
